@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration scan="true" scanPeriod="1 minutes" packagingData="true">
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5level [${project.name}] [%30(%class{0}.%M:%L)] %X{sessionId} %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/${project.artifactId}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.rolled.path}/${project.artifactId}_%d{yyyy-MM-dd}_%i.log.zip</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%class{36}.%M:%L] %X{sessionId} %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="DEBUG">
+        <!--<appender-ref ref="FILE" />-->
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>

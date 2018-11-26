@@ -1,0 +1,10 @@
+# no
+/*
+/**/output.*
+/**/filters-local.properties
+
+# yes
+!.gitignore
+!README.md
+!pom.xml
+!src
