@@ -117,7 +117,7 @@ public class ImageProcessor {
      * 1) Trasformata in scala di grigi
      * 2) Sfocata
      * 3) Ricontrastata
-     *
+     * <p>
      * Ideale per effettuare OMR/ICR
      */
     public Mat preprocess(Mat image) {
@@ -179,12 +179,14 @@ public class ImageProcessor {
             Mat preprocessed = this.preprocess(rawInputBGR);
 
             /*
-            Scalar lower = new Scalar(0, 0, 0);
-            Scalar upper = new Scalar(15, 15, 15);
-
-            Mat out = new Mat();
-            Core.inRange(rawInputBGR, lower, upper, out);
-            */
+             * Ignorare questo pezzo
+             *
+             * Scalar lower = new Scalar(0, 0, 0);
+             * Scalar upper = new Scalar(15, 15, 15);
+             *
+             * Mat out = new Mat();
+             * Core.inRange(rawInputBGR, lower, upper, out);
+             */
 
             Mat hierarchy = new Mat(); // la hierarchy stabilisce il grado di parentela tra i contorni
             List<MatOfPoint> contours = new ArrayList<>();
@@ -193,12 +195,30 @@ public class ImageProcessor {
             log.debug("I've found {} contours", contours.size());
 
             /*
-            double parent = hierarchy.get(0, i)[2];
-            double children = hierarchy.get(0, i)[3];
-
-            if (parent < 0 && children < 0) {
-            }
-            */
+             * La hierarchy al momento non la ho utilizzata, comunque interessante, permette ad esempio
+             * di capire se un contour segue una geometria aperta o chiusa
+             *
+             * // per le geometrie senza riempimento solid
+             * double parent = hierarchy.get(0, i)[2];
+             *
+             * if (parent < 0) {
+             *   // chiusa
+             * } else {
+             *   // aperta
+             * }
+             *
+             *
+             * // per geometrie con riempimento solid
+             * // (https://stackoverflow.com/a/42585938)
+             * double parent = hierarchy.get(0, i)[2];
+             * double children = hierarchy.get(0, i)[3];
+             *
+             * if (parent < 0 && children < 0) {
+             *   // chiusa
+             * } else {
+             *   // aperta
+             * }
+             */
 
             ArrayList<Mat> checkboxes = new ArrayList<>();
 
@@ -245,6 +265,7 @@ public class ImageProcessor {
 
     /**
      * Raddrizza immagini storte
+     *
      * @param input Immagine
      * @param angle Angolo da ruotare espresso in gradi
      * @return Immagine ruotata su di un perno centrale (len/2)
@@ -269,9 +290,10 @@ public class ImageProcessor {
 
     /**
      * Ordina una mappa in base alla implementazione dell'interfaccia Comparable del tipo dei suoi Values
+     *
      * @param input Mappa
-     * @param <K> Chiave mappa
-     * @param <V> Valore mappa, deve implementare Comparable
+     * @param <K>   Chiave mappa
+     * @param <V>   Valore mappa, deve implementare Comparable
      * @return nuova LinkedHashMap ordinata
      */
     public <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> input) {
@@ -288,6 +310,7 @@ public class ImageProcessor {
 
     /**
      * Restituisce un comparatore custom per MatOfPoint(s)
+     *
      * @return comparatore in base all'area del vettore
      */
     private Comparator<MatOfPoint> contourAreaComparator() {
