@@ -4,6 +4,7 @@ import com.riccardofinazzi.newclean.bogey.common.ApplicationProperties;
 import nu.pattern.OpenCV;
 import org.apache.commons.imaging.ImageReadException;
 import org.opencv.core.*;
+import static org.opencv.core.Core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,7 +186,7 @@ public class ImageProcessor {
              * Scalar upper = new Scalar(15, 15, 15);
              *
              * Mat out = new Mat();
-             * Core.inRange(rawInputBGR, lower, upper, out);
+             * inRange(rawInputBGR, lower, upper, out);
              */
 
             Mat hierarchy = new Mat(); // la hierarchy stabilisce il grado di parentela tra i contorni
@@ -252,16 +253,16 @@ public class ImageProcessor {
                 /*
                  * // recupero i pixels neri
                  *
-                 * int whitePixels = Core.countNonZero(e);
+                 * int whitePixels = countNonZero(e);
                  * int blackPixels = totalPixels - whitePixels;
                  */
 
                 // oppure inverto i colori dell'immagine
                 Mat inverted = new Mat();
-                Core.bitwise_not(e, inverted);
+                bitwise_not(e, inverted);
 
                 // calcolo quanti pixel sono marcati in percentuale
-                int blackPixels = Core.countNonZero(inverted);
+                int blackPixels = countNonZero(inverted);
                 float percentage = ((float) blackPixels / (float) totalPixels) * 100.0F;
 
                 // occhio e croce, se oltre il 30% del centro della checkbox è marcata per me è un sì
