@@ -4,7 +4,7 @@
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%-5level [${project.name}] [%30(%class{0}.%M:%L)] %X{sessionId} %msg%n</pattern>
+            <pattern>%-5level [${project.name}] [%50(%class{0}.%M:%L)] %X{sessionId} %msg%n</pattern>
         </encoder>
     </appender>
 

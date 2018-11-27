@@ -2,8 +2,8 @@
 
 ## Technology Stack
 
-- Java SE
 - Build: [Maven](https://maven.apache.org/)
+- Java SE
   - Dependencies
     - [Logback](https://logback.qos.ch/): **1.2.3**
     - [openCV](https://opencv.org/): **3.4.2-0**
