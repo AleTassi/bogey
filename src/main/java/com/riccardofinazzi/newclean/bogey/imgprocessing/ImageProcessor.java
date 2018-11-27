@@ -225,24 +225,54 @@ public class ImageProcessor {
             // per ogni contorno
             for (MatOfPoint e : contours) {
 
-                // disegno un rettangolo attorno al contorno individuato.
-                Rect rect = boundingRect(e);
+                // creo un rettangolo esterno al contorno individuato.
+                Rect bRect = boundingRect(e);
 
                 // Se l'area è compresa in questi parametri si tratta di una checkbox
-                if ((rect.height > 27 && rect.height < 32) && (rect.width > 27 && rect.width < 32)) {
+                if ((bRect.height > 27 && bRect.height < 32) && (bRect.width > 27 && bRect.width < 32)) {
 
-                    // Aggiungo un ritaglio virtuale del contenuto della chl'immagine in una lista
-                    checkboxes.add(new Mat(rawInputBGR, new Rect(new Point(rect.x + 7, rect.y + 7), new Point(rect.x + rect.width - 8, rect.y + rect.height - 8))));
+                    // Aggiungo un ritaglio virtuale del contenuto della checkbox...
+                    Point a = new Point(bRect.x + 7, bRect.y + 7);
+                    Point b = new Point(bRect.x + bRect.width - 8, bRect.y + bRect.height - 8);
+                    Rect cropRect = new Rect(a, b);
+                    Mat subImage = new Mat(preprocessed, cropRect);
+                    // ...in una lista
+                    checkboxes.add(subImage);
 
                     // disegno un rettangolo sul file di output per marcare quanto ho trovato
-                    rectangle(rawInputBGR, new Point(rect.x + 7, rect.y + 7), new Point(rect.x + rect.width - 8, rect.y + rect.height - 8), new Scalar(0, 0, 255));
+                    Scalar red = new Scalar(0, 0, 255);
+                    rectangle(rawInputBGR, a, b, red);
                 }
             }
 
-            log.debug("Of those {} contours, {} are checkboxes", contours.size(), checkboxes.size());
+            int i = 0;
+            for (Mat e : checkboxes) {
+
+                int totalPixels = e.rows() * e.cols();
+                /*
+                 * // recupero i pixels neri
+                 *
+                 * int whitePixels = Core.countNonZero(e);
+                 * int blackPixels = totalPixels - whitePixels;
+                 */
+
+                // oppure inverto i colori dell'immagine
+                Mat inverted = new Mat();
+                Core.bitwise_not(e, inverted);
+
+                // calcolo quanti pixel sono marcati in percentuale
+                int blackPixels = Core.countNonZero(inverted);
+                float percentage = ((float) blackPixels / (float) totalPixels) * 100.0F;
+
+                // occhio e croce, se oltre il 30% del centro della checkbox è marcata per me è un sì
+                if (percentage >= 30.0F)
+                    log.debug("Checkbox n° {} has {}% pixels marked", i, percentage);
+
+                i++;
+            }
 
             String outFilename = props.getRequiredProperty("out.file");
-            log.debug("Writing to output success: {}, {}", (Imgcodecs.imwrite(outFilename, preprocessed)), outFilename);
+            log.debug("Writing to output success: {}, {}", (Imgcodecs.imwrite(outFilename, rawInputBGR)), outFilename);
         } catch (IOException e) {
             log.error("Error while processing image {}", e.getMessage(), e);
         }
