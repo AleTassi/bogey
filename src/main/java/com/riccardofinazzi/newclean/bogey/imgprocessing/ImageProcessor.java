@@ -195,6 +195,8 @@ public class ImageProcessor {
             findContours(preprocessed, contours, hierarchy, RETR_LIST, CHAIN_APPROX_SIMPLE);
             log.debug("I've found {} contours", contours.size());
 
+            Collections.sort(contours, ImageSortUtils.contourYComparator());
+
             /*
              * La hierarchy al momento non la ho utilizzata, comunque interessante, permette ad esempio
              * di capire se un contour segue una geometria aperta o chiusa
@@ -224,6 +226,7 @@ public class ImageProcessor {
             ArrayList<Mat> checkboxes = new ArrayList<>();
 
             // per ogni contorno
+            int j = 1;
             for (MatOfPoint e : contours) {
 
                 // creo un rettangolo esterno al contorno individuato.
@@ -243,6 +246,8 @@ public class ImageProcessor {
                     // disegno un rettangolo sul file di output per marcare quanto ho trovato
                     Scalar red = new Scalar(0, 0, 255);
                     rectangle(rawInputBGR, a, b, red);
+
+                    putText(rawInputBGR, String.valueOf(j++), cropRect.tl(), Core.FONT_ITALIC, 0.4, new Scalar(0,0,255));
                 }
             }
 
@@ -319,44 +324,4 @@ public class ImageProcessor {
         return result;
     }
 
-    /**
-     * Ordina una mappa in base alla implementazione dell'interfaccia Comparable del tipo dei suoi Values
-     *
-     * @param input Mappa
-     * @param <K>   Chiave mappa
-     * @param <V>   Valore mappa, deve implementare Comparable
-     * @return nuova LinkedHashMap ordinata
-     */
-    public <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> input) {
-        List<Map.Entry<K, V>> list = new ArrayList<>(input.entrySet());
-        list.sort(Map.Entry.comparingByValue());
-
-        Map<K, V> output = new LinkedHashMap<>();
-        for (Map.Entry<K, V> entry : list) {
-            output.put(entry.getKey(), entry.getValue());
-        }
-
-        return output;
-    }
-
-    /**
-     * Restituisce un comparatore custom per MatOfPoint(s)
-     *
-     * @return comparatore in base all'area del vettore
-     */
-    private Comparator<MatOfPoint> contourAreaComparator() {
-
-        return new Comparator<MatOfPoint>() {
-            @Override
-            public int compare(MatOfPoint o1, MatOfPoint o2) {
-                double o1Area = contourArea(o1);
-                double o2Area = contourArea(o2);
-
-                if (o1Area < o2Area) return 1;
-                if (o1Area > o2Area) return -1;
-                return 0;
-            }
-
-        };
-    }
 }
